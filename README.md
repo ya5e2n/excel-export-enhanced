@@ -1,4 +1,4 @@
-# Cognito Export Plus
+# Excel Export Enhanced
 
 ## Overview
-Parses and cleans up data from an Excel sheet, then re-exports it as a new Excel sheet and and Word doc.
+E3 is a tool that parses and cleans up Excel sheets, then re-exports them as new Excel sheets and Word docs.
