@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/lukasjarosch/go-docx"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -32,12 +33,16 @@ var excelFileName string
 var sheetName string
 
 func main() {
-	fmt.Println(os.Args)
 	if len(os.Args) > 1 {
 		excelFileName = os.Args[1]
 		sheetName = os.Args[2]
 	} else {
 		log.Fatal("Excel file name or sheet name are missing...")
+
+		// For manual testing
+		// "original-data-testing.xlsx" "Sheet1"
+		// excelFileName = "original-data-testing.xlsx"
+		// sheetName = "Sheet1"
 	}
 
 	f, err := excelize.OpenFile(excelFileName)
@@ -75,19 +80,18 @@ func main() {
 		cleanRegistrantData = append(cleanRegistrantData, registrantInfo{father, mother, address, phone, email, emergencyContact, emergencyPhone, student1, student1DOB, student2, student2DOB, student3, student3DOB, student4, student4DOB})
 	}
 
+	// Excel
 	newf := excelize.NewFile()
 	newf.SetSheetRow("Sheet1", "A1", &[]string{"Father's Name", "Mother's Name", "Address", "Phone Number", "Email", "Emergency Contact", "Emergency Phone #", "Student 1 Name", "Student 1 DOB", "Student 2 Name", "Student 2 DOB", "Student 3 Name", "Student 3 DOB", "Student 4 Name", "Student 4 DOB"})
 	count := 2
 
 	for _, data := range cleanRegistrantData {
-		fmt.Println(data)
-
 		index, err := excelize.CoordinatesToCellName(1, count)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(index)
 
+		fmt.Printf("Adding %v to Excel sheet...\n", data.student1Name)
 		newf.SetSheetRow("Sheet1", index, &[]string{data.fatherName, data.motherName, data.address, data.phoneNumber, data.email, data.emergencyContact, data.emergencyNumber, data.student1Name, data.student1DOB, data.student2Name, data.student2DOB, data.student3Name, data.student3DOB, data.student4Name, data.student4DOB})
 
 		count++
@@ -95,5 +99,46 @@ func main() {
 		if err := newf.SaveAs(fmt.Sprintf("clean-%v", excelFileName)); err != nil {
 			fmt.Println(err)
 		}
+
+		// Word
+		replaceMap := docx.PlaceholderMap{
+			"FATHERS_NAME":      data.fatherName,
+			"MOTHERS_NAME":      data.motherName,
+			"ADDRESS":           data.address,
+			"EMAIL":             data.email,
+			"PHONE_NUMBER":      data.phoneNumber,
+			"EMERGENCY_PHONE":   data.emergencyNumber,
+			"EMERGENCY_CONTACT": data.emergencyContact,
+			"CHILD_1":           data.student1Name,
+			"CHILD_1_DOB":       data.student1DOB,
+			"CHILD_1_TEAM":      "",
+			"CHILD_2":           data.student2Name,
+			"CHILD_2_DOB":       data.student2DOB,
+			"CHILD_2_TEAM":      "",
+			"CHILD_3":           data.student3Name,
+			"CHILD_3_DOB":       data.student3DOB,
+			"CHILD_3_TEAM":      "",
+			"CHILD_4":           data.student4Name,
+			"CHILD_4_DOB":       data.student4DOB,
+			"CHILD_4_TEAM":      "",
+		}
+
+		doc, err := docx.Open("student-info-doc-format.docx")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = doc.ReplaceAll(replaceMap)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		docName := fmt.Sprintf("students/%v-info.docx", data.student1Name)
+		err = doc.WriteToFile(docName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Created %v...\n", docName)
 	}
+
 }

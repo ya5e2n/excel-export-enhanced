@@ -1,3 +1,6 @@
 *.xlsx
+*.doc*
+
+students
 
 .DS_Store
