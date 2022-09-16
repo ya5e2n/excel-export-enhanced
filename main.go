@@ -96,7 +96,7 @@ func main() {
 
 		count++
 
-		if err := newf.SaveAs(fmt.Sprintf("clean-%v", excelFileName)); err != nil {
+		if err := newf.SaveAs(fmt.Sprintf("%v-students/a-clean-%v", excelFileName, excelFileName)); err != nil {
 			fmt.Println(err)
 		}
 
@@ -133,7 +133,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		docName := fmt.Sprintf("students/%v-info.docx", data.student1Name)
+		docName := fmt.Sprintf("%v-students/%v-info.docx", excelFileName, data.student1Name)
 		err = doc.WriteToFile(docName)
 		if err != nil {
 			log.Fatal(err)
