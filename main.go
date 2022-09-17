@@ -32,6 +32,34 @@ var cleanRegistrantData []registrantInfo
 var excelFileName string
 var sheetName string
 
+var starLabels = []string{
+	"ParentInformation_FathersName_First",
+	"ParentInformation_FathersName_Last",
+	"ParentInformation_MothersName_First",
+	"ParentInformation_MothersName_Last",
+	"ParentInformation_Address_Line1",
+	"ParentInformation_Address_City",
+	"ParentInformation_Address_State",
+	"ParentInformation_Address_PostalCode",
+	"ParentInformation_Phone",
+	"ParentInformation_Email",
+	"EmergencyContactInformation_EmergencyContactName_First",
+	"EmergencyContactInformation_EmergencyContactName_Last",
+	"EmergencyContactInformation_EmergencyContactPhone",
+	"StudentInformation_FirstStudentsInformation_FristStudentsName_First",
+	"StudentInformation_FirstStudentsInformation_FristStudentsName_Last",
+	"StudentInformation_FirstStudentsInformation_DateOfBirth",
+	"StudentInformation_SecondStudentsInformation_SecondStudentsName_First",
+	"StudentInformation_SecondStudentsInformation_SecondStudentsName_Last",
+	"StudentInformation_SecondStudentsInformation_DateOfBirth",
+	"StudentInformation_ThirdStudentsInformation_ThirdStudentsName_First",
+	"StudentInformation_ThirdStudentsInformation_ThirdStudentsName_Last",
+	"StudentInformation_ThirdStudentsInformation_DateOfBirth",
+	"StudentInformation_FourthStudentsInformation_FourthStudentsName_First",
+	"StudentInformation_FourthStudentsInformation_FourthStudentsName_Last",
+	"StudentInformation_FourthStudentsInformation_DateOfBirth",
+}
+
 func main() {
 	if len(os.Args) > 1 {
 		excelFileName = os.Args[1]
@@ -60,22 +88,35 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var labelIndexes []int
+
+	columnLabels := rows[0]
+	for index, label := range columnLabels {
+		for _, value := range starLabels {
+			if label == value {
+				labelIndexes = append(labelIndexes, index)
+			}
+		}
+	}
+
+	fmt.Println(labelIndexes, len(labelIndexes))
+
 	for _, row := range rows[1:] {
-		father := fmt.Sprintf("%v %v", row[3], row[4])
-		mother := fmt.Sprintf("%v %v", row[5], row[6])
-		address := fmt.Sprintf("%v, %v, %v %v", row[7], row[9], row[10], row[11])
-		phone := fmt.Sprintf("%v", row[12])
-		email := fmt.Sprintf("%v", row[13])
-		emergencyContact := fmt.Sprintf("%v %v", row[14], row[15])
-		emergencyPhone := fmt.Sprintf("%v", row[16])
-		student1 := fmt.Sprintf("%v %v", row[20], row[21])
-		student1DOB := fmt.Sprintf("%v", row[23])
-		student2 := fmt.Sprintf("%v %v", row[24], row[25])
-		student2DOB := fmt.Sprintf("%v", row[27])
-		student3 := fmt.Sprintf("%v %v", row[28], row[29])
-		student3DOB := fmt.Sprintf("%v", row[31])
-		student4 := fmt.Sprintf("%v %v", row[32], row[33])
-		student4DOB := fmt.Sprintf("%v", row[35])
+		father := fmt.Sprintf("%v %v", row[labelIndexes[0]], row[labelIndexes[1]])
+		mother := fmt.Sprintf("%v %v", row[labelIndexes[2]], row[labelIndexes[3]])
+		address := fmt.Sprintf("%v, %v, %v %v", row[labelIndexes[4]], row[labelIndexes[5]], row[labelIndexes[6]], row[labelIndexes[7]])
+		phone := fmt.Sprintf("%v", row[labelIndexes[8]])
+		email := fmt.Sprintf("%v", row[labelIndexes[9]])
+		emergencyContact := fmt.Sprintf("%v %v", row[labelIndexes[10]], row[labelIndexes[11]])
+		emergencyPhone := fmt.Sprintf("%v", row[labelIndexes[12]])
+		student1 := fmt.Sprintf("%v %v", row[labelIndexes[13]], row[labelIndexes[14]])
+		student1DOB := fmt.Sprintf("%v", row[labelIndexes[15]])
+		student2 := fmt.Sprintf("%v %v", row[labelIndexes[16]], row[labelIndexes[17]])
+		student2DOB := fmt.Sprintf("%v", row[labelIndexes[18]])
+		student3 := fmt.Sprintf("%v %v", row[labelIndexes[19]], row[labelIndexes[20]])
+		student3DOB := fmt.Sprintf("%v", row[labelIndexes[21]])
+		student4 := fmt.Sprintf("%v %v", row[labelIndexes[22]], row[labelIndexes[23]])
+		student4DOB := fmt.Sprintf("%v", row[labelIndexes[24]])
 
 		cleanRegistrantData = append(cleanRegistrantData, registrantInfo{father, mother, address, phone, email, emergencyContact, emergencyPhone, student1, student1DOB, student2, student2DOB, student3, student3DOB, student4, student4DOB})
 	}
